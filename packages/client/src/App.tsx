@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useColyseus } from './hooks/useColyseus';
+import { useColyseus, getHttpServerUrl } from './hooks/useColyseus';
 import { LandingPage } from './components/LandingPage';
 import { LobbyPage } from './components/LobbyPage';
 import { GameScene } from './components/GameScene';
@@ -33,7 +33,7 @@ export const App: React.FC = () => {
 
     if (resultShareCode) {
       // Fetch public result
-      fetch(`http://localhost:2567/api/result/${resultShareCode}`)
+      fetch(`${getHttpServerUrl()}/api/result/${resultShareCode}`)
         .then((res) => res.json())
         .then((data) => {
           if (!data.error) setPublicResult(data);

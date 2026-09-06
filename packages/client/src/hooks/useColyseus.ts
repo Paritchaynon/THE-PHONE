@@ -2,20 +2,40 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Client, Room } from 'colyseus.js';
 import { ClientPrivateState, ClientSharedState } from '@between-us/shared';
 
-const getColyseusUrl = () => {
+export const getColyseusUrl = () => {
   if (import.meta.env.VITE_SERVER_URL) {
-    const raw = import.meta.env.VITE_SERVER_URL;
+    let raw = import.meta.env.VITE_SERVER_URL.trim();
     if (raw.startsWith('http://')) return raw.replace('http://', 'ws://');
     if (raw.startsWith('https://')) return raw.replace('https://', 'wss://');
     if (raw.startsWith('ws://') || raw.startsWith('wss://')) return raw;
-    return `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${raw}`;
+    const isHttps = typeof window !== 'undefined' && window.location.protocol === 'https:';
+    return `${isHttps ? 'wss:' : 'ws:'}//${raw}`;
   }
-  return window.location.hostname === 'localhost' 
-    ? 'ws://localhost:2567' 
-    : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`;
+  if (typeof window !== 'undefined') {
+    if (window.location.hostname === 'localhost') {
+      return 'ws://localhost:2567';
+    }
+    return `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`;
+  }
+  return 'ws://localhost:2567';
 };
 
-const COLYSEUS_URL = getColyseusUrl();
+export const getHttpServerUrl = () => {
+  if (import.meta.env.VITE_SERVER_URL) {
+    let raw = import.meta.env.VITE_SERVER_URL.trim();
+    if (raw.startsWith('ws://')) return raw.replace('ws://', 'http://');
+    if (raw.startsWith('wss://')) return raw.replace('wss://', 'https://');
+    if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
+    const isHttps = typeof window !== 'undefined' && window.location.protocol === 'https:';
+    return `${isHttps ? 'https:' : 'http:'}//${raw}`;
+  }
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    return window.location.origin;
+  }
+  return 'http://localhost:2567';
+};
+
+export const COLYSEUS_URL = getColyseusUrl();
 
 export function useColyseus() {
   const [client] = useState(() => new Client(COLYSEUS_URL));
