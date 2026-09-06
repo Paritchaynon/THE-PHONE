@@ -165,6 +165,32 @@ export class StoryEngine {
     const totalDecisions = this.decisionsHistory.length;
     const agreementRate = totalDecisions > 0 ? Math.round((agreementCount / totalDecisions) * 100) : 50;
 
+    const formattedHistory = this.decisionsHistory
+      .filter(d => {
+        const sc = SCENES[d.sceneId];
+        return sc && sc.mode !== 'narrative_only' && (d.choiceA !== 'continue' && d.choiceB !== 'continue');
+      })
+      .map(d => {
+        const sc = SCENES[d.sceneId];
+        let impact = 'ปรับเปลี่ยนทัศนคติและระยะห่างระหว่างกัน';
+        if (d.agreedApproach) {
+          impact = 'เปิดใจเข้าหากันอย่างจริงใจ ลดกำแพงในใจ';
+        } else if (d.choiceA?.includes('peek') || d.choiceB?.includes('defensive') || d.choiceA?.includes('shut_down') || d.choiceB?.includes('hurry_hide')) {
+          impact = 'เกิดความคลางแคลงใจและความระแวงสะสมในความสัมพันธ์';
+        } else if (d.choiceA?.includes('choose_them') && d.choiceB?.includes('choose_them')) {
+          impact = 'เลือกเคียงข้างกันอย่างไม่มีเงื่อนไข นำไปสู่บทสรุปที่ยั่งยืน';
+        } else if (d.choiceA?.includes('walk_away') || d.choiceB?.includes('walk_away')) {
+          impact = 'เลือกที่จะถอยห่างและรักษาตัวเอง นำไปสู่การแยกย้าย';
+        }
+        return {
+          sceneId: d.sceneId,
+          chapter: sc?.chapter || 1,
+          choiceA: d.choiceA || '',
+          choiceB: d.choiceB || '',
+          impactDescription: impact
+        };
+      });
+
     return {
       shareCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
       archetypeA,
@@ -181,6 +207,7 @@ export class StoryEngine {
         vulnerability: this.relationship.VULNERABILITY,
         closeness: this.relationship.CLOSENESS
       },
+      decisionHistory: formattedHistory,
       completedAt: new Date().toISOString()
     };
   }

@@ -208,25 +208,30 @@ export class GameRoom extends Room<GameRoomStateSchema> {
 
       // Resolve scene
       const prevSceneId = this.state.currentSceneId;
+      const prevSceneDef = this.storyEngine.getScene(prevSceneId);
       const res = this.storyEngine.resolveScene(sessionA, sessionB);
 
       this.state.lastResolvedSceneId = prevSceneId;
       this.state.revealedChoiceA = sessionA.currentChoiceId || '';
       this.state.revealedChoiceB = sessionB.currentChoiceId || '';
 
-      // Determine narrative trajectory shift message
-      const dTrust = this.storyEngine.relationship.TRUST - prevTrust;
-      const dConflict = this.storyEngine.relationship.CONFLICT - prevConflict;
-      const dCloseness = this.storyEngine.relationship.CLOSENESS - prevCloseness;
+      // Determine narrative trajectory shift message only for scenes with interactive choices
+      if (prevSceneDef && prevSceneDef.mode !== 'narrative_only') {
+        const dTrust = this.storyEngine.relationship.TRUST - prevTrust;
+        const dConflict = this.storyEngine.relationship.CONFLICT - prevConflict;
+        const dCloseness = this.storyEngine.relationship.CLOSENESS - prevCloseness;
 
-      if (dConflict >= 8) {
-        this.lastShiftDescription = 'เส้นเรื่องเกิดรอยร้าว: ความขัดแย้งพุ่งสูงขึ้นอย่างมีนัยสำคัญ ส่งผลต่อฉากจบที่ไม่อาจย้อนคืน';
-      } else if (dTrust >= 8 || dCloseness >= 8) {
-        this.lastShiftDescription = 'เส้นเรื่องเบ่งบาน: กำแพงในใจลดลง ความไว้ใจและความใกล้ชิดแน่นแฟ้นยิ่งขึ้น';
-      } else if (dTrust <= -8) {
-        this.lastShiftDescription = 'เส้นเรื่องสั่นคลอน: ความระแวงเริ่มหยั่งราก นำพาเรื่องราวสู่เส้นทางที่เปราะบาง';
+        if (dConflict >= 6) {
+          this.lastShiftDescription = 'เส้นเรื่องเกิดรอยร้าว: ความขัดแย้งพุ่งสูงขึ้น ส่งผลต่อทิศทางฉากจบที่ตึงเครียด';
+        } else if (dTrust >= 6 || dCloseness >= 6) {
+          this.lastShiftDescription = 'เส้นเรื่องเบ่งบาน: กำแพงในใจลดลง ความไว้ใจและความใกล้ชิดแน่นแฟ้นยิ่งขึ้น';
+        } else if (dTrust <= -6) {
+          this.lastShiftDescription = 'เส้นเรื่องสั่นคลอน: ความระแวงเริ่มก่อตัว นำพาความสัมพันธ์สู่จุดเปราะบาง';
+        } else {
+          this.lastShiftDescription = 'เส้นเรื่องขยับตัว: การตัดสินใจของคุณทั้งสองเริ่มส่งผลต่อบทสรุปความสัมพันธ์';
+        }
       } else {
-        this.lastShiftDescription = 'เส้นเรื่องขยับตัว: การตัดสินใจของคุณทั้งคู่กำลังปรับเปลี่ยนทัศนคติที่มีต่อกัน';
+        this.lastShiftDescription = undefined;
       }
 
       if (res.isFinished && res.result) {
@@ -242,7 +247,7 @@ export class GameRoom extends Room<GameRoomStateSchema> {
           result: res.result
         });
       } else {
-        // Transition to REVEAL state so players see each other's simultaneous choice and dialogue
+        // Transition to REVEAL state so players acknowledge progression
         this.state.status = 'REVEAL';
       }
 
@@ -260,6 +265,7 @@ export class GameRoom extends Room<GameRoomStateSchema> {
   private advanceToNextScene() {
     this.state.status = 'PLAYING';
     this.state.currentSceneId = this.storyEngine.currentSceneId;
+    this.lastShiftDescription = undefined; // Reset shift banner on moving into new scene
     const sceneDef = this.storyEngine.getScene(this.state.currentSceneId);
     if (sceneDef) {
       this.state.chapter = sceneDef.chapter;

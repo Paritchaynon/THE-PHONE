@@ -97,6 +97,13 @@ export interface GameResultSummary {
     vulnerability: number;
     closeness: number;
   };
+  decisionHistory?: Array<{
+    sceneId: string;
+    chapter: number;
+    choiceA: string;
+    choiceB: string;
+    impactDescription?: string;
+  }>;
   completedAt: string;
 }
 

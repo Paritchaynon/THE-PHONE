@@ -33,11 +33,11 @@ export const RevealScreen: React.FC<RevealScreenProps> = ({ shared, privateState
       <div className="w-full max-w-xl bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-8 flex flex-col items-center shadow-2xl relative z-10 animate-fade-in">
         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-rose-400 mb-2">
           <Eye className="w-4 h-4" />
-          <span>{t('revealed_title')}</span>
+          <span>บันทึกการตัดสินใจ</span>
         </div>
 
         <h2 className="text-xl md:text-2xl font-light text-white mb-4 text-center">
-          ช่วงเวลาแห่งการเปิดเผย
+          ช่วงเวลาแห่งการไตร่ตรอง
         </h2>
 
         {/* Narrative Trajectory Shift Notification Banner */}
@@ -55,7 +55,7 @@ export const RevealScreen: React.FC<RevealScreenProps> = ({ shared, privateState
           </div>
         )}
 
-        {/* Decisions comparison */}
+        {/* Decisions display - Only show own choice; keep partner's choice concealed */}
         <div className="w-full flex flex-col gap-4 mb-6">
           {/* My Choice */}
           <div className="p-4 md:p-5 rounded-2xl bg-white/[0.03] border border-white/10 relative overflow-hidden">
@@ -72,19 +72,19 @@ export const RevealScreen: React.FC<RevealScreenProps> = ({ shared, privateState
             </p>
           </div>
 
-          {/* Partner Choice */}
-          <div className="p-4 md:p-5 rounded-2xl bg-rose-500/[0.05] border border-rose-500/20 relative overflow-hidden">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] font-mono uppercase text-rose-300">
-                {t('partner_chose')}
-              </span>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/20">
-                {isPlayerA ? t('role_b') : t('role_a')}
-              </span>
+          {/* Hidden Partner Choice Notice */}
+          <div className="p-4 md:p-5 rounded-2xl bg-black/40 border border-white/10 relative overflow-hidden flex items-center gap-3.5">
+            <div className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0">
+              <Sparkles className="w-4 h-4 text-rose-400/80" />
             </div>
-            <p className="text-sm md:text-base text-rose-100 font-light leading-relaxed">
-              {partnerChoiceText || '...'}
-            </p>
+            <div>
+              <span className="text-[11px] font-mono uppercase text-slate-400 block mb-0.5">
+                {t('partner_chose')} (ซ่อนอยู่)
+              </span>
+              <p className="text-xs md:text-sm text-slate-300 font-light italic leading-relaxed">
+                “คำตอบของอีกฝ่ายถูกเก็บเป็นความลับไว้ในเงามืด... ผลลัพธ์ทั้งหมดจะเปิดเผยในบทสรุปสุดท้าย”
+              </p>
+            </div>
           </div>
         </div>
 

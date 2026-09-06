@@ -84,43 +84,75 @@ export const ShareCardModal: React.FC<ShareCardModalProps> = ({ result, onClose 
     // Player A
     ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
     ctx.font = '300 20px "Kanit", sans-serif';
-    ctx.fillText(locale === 'th' ? 'ผู้เล่น A' : 'PLAYER A', 140, 620);
+    ctx.fillText(locale === 'th' ? 'ผู้เล่น A' : 'PLAYER A', 140, 600);
     ctx.fillStyle = '#ffffff';
     ctx.font = '600 36px "Inter", "Kanit", sans-serif';
-    ctx.fillText(archAInfo.name, 140, 670);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.fillText(archAInfo.name, 140, 650);
+    ctx.fillStyle = '#e06c75';
     ctx.font = '300 22px "Kanit", sans-serif';
-    ctx.fillText(archAInfo.subtitle, 140, 715);
+    ctx.fillText(archAInfo.subtitle, 140, 690);
 
     // Player B
     ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
     ctx.font = '300 20px "Kanit", sans-serif';
-    ctx.fillText(locale === 'th' ? 'ผู้เล่น B' : 'PLAYER B', 600, 620);
+    ctx.fillText(locale === 'th' ? 'ผู้เล่น B' : 'PLAYER B', 600, 600);
     ctx.fillStyle = '#ffffff';
     ctx.font = '600 36px "Inter", "Kanit", sans-serif';
-    ctx.fillText(archBInfo.name, 600, 670);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.fillText(archBInfo.name, 600, 650);
+    ctx.fillStyle = '#c678dd';
     ctx.font = '300 22px "Kanit", sans-serif';
-    ctx.fillText(archBInfo.subtitle, 600, 715);
+    ctx.fillText(archBInfo.subtitle, 600, 690);
+
+    // MBTI Dimensions Visual Progress Bars on Canvas
+    const dims = [
+      { name: 'TRUST', val: result.aggregateStats.trust, color: '#61afef' },
+      { name: 'HONESTY', val: result.aggregateStats.honesty, color: '#e5c07b' },
+      { name: 'EMPATHY', val: result.aggregateStats.empathy, color: '#98c379' },
+      { name: 'CLOSENESS', val: result.aggregateStats.closeness, color: '#c678dd' }
+    ];
+
+    let startY = 760;
+    dims.forEach((d) => {
+      // Label & Value
+      ctx.textAlign = 'left';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.font = '400 18px "Inter", sans-serif';
+      ctx.fillText(d.name, 140, startY + 16);
+
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '600 18px "Inter", sans-serif';
+      ctx.fillText(`${d.val}%`, 940, startY + 16);
+
+      // Track
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+      ctx.fillRect(300, startY + 2, 500, 14);
+
+      // Bar
+      ctx.fillStyle = d.color;
+      ctx.fillRect(300, startY + 2, (500 * Math.max(5, Math.min(100, d.val))) / 100, 14);
+
+      startY += 40;
+    });
 
     // Ending Box
     ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
-    ctx.fillRect(140, 800, 800, 160);
+    ctx.fillRect(140, 960, 800, 140);
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-    ctx.strokeRect(140, 800, 800, 160);
+    ctx.strokeRect(140, 960, 800, 140);
 
     ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
     ctx.font = '300 18px "Kanit", sans-serif';
-    ctx.fillText(locale === 'th' ? 'บทสรุปความสัมพันธ์' : 'FINAL ENDING', 540, 850);
+    ctx.fillText(locale === 'th' ? 'บทสรุปความสัมพันธ์' : 'FINAL ENDING', 540, 1005);
     ctx.fillStyle = '#e5c07b';
-    ctx.font = '600 38px "Inter", "Kanit", sans-serif';
-    ctx.fillText(endingInfo.title, 540, 905);
+    ctx.font = '600 36px "Inter", "Kanit", sans-serif';
+    ctx.fillText(endingInfo.title, 540, 1055);
 
     // Footer share code
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
     ctx.font = '400 18px monospace';
-    ctx.fillText(`SHARE CODE: ${result.shareCode} // BETWEEN-US.GAME`, 540, 1200);
+    ctx.fillText(`SHARE CODE: ${result.shareCode} // BETWEEN-US.GAME`, 540, 1220);
 
     // Trigger download
     const link = document.createElement('a');
