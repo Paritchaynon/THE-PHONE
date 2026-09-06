@@ -7,9 +7,10 @@ interface LandingPageProps {
   onCreateRoom: () => void;
   onJoinRoom: (code: string) => void;
   loading: boolean;
+  errorMessage?: string | null;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onCreateRoom, onJoinRoom, loading }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onCreateRoom, onJoinRoom, loading, errorMessage }) => {
   const { locale, setLocale, t } = useI18n();
   const [roomCode, setRoomCode] = useState('');
   const [showJoinInput, setShowJoinInput] = useState(false);
@@ -62,9 +63,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCreateRoom, onJoinRo
         <h1 className="text-4xl md:text-5xl font-extralight tracking-widest text-white/95 mb-4">
           BETWEEN US
         </h1>
-        <p className="text-sm md:text-base text-slate-400 font-light leading-relaxed mb-10 max-w-sm">
+        <p className="text-sm md:text-base text-slate-400 font-light leading-relaxed mb-8 max-w-sm">
           {t('tagline')}
         </p>
+
+        {errorMessage && (
+          <div className="w-full mb-6 p-3 rounded-xl bg-rose-500/20 border border-rose-500/40 text-xs text-rose-200 text-center animate-fade-in">
+            {errorMessage}
+          </div>
+        )}
 
         {!showJoinInput ? (
           <div className="w-full flex flex-col gap-3">

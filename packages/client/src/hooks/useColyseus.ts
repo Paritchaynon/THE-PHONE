@@ -34,6 +34,25 @@ export function useColyseus() {
     setConnected(true);
     setError(null);
 
+    // Initial state setup if state already exists
+    if (activeRoom.state) {
+      setSharedState({
+        roomCode: activeRoom.state.roomCode || activeRoom.id.substring(0, 6).toUpperCase(),
+        status: activeRoom.state.status || 'LOBBY',
+        currentSceneId: activeRoom.state.currentSceneId || 'ch1_intro',
+        chapter: activeRoom.state.chapter || 1,
+        playerAConnected: true,
+        playerBConnected: false,
+        playerAReady: false,
+        playerBReady: false,
+        playerAChoiceSubmitted: false,
+        playerBChoiceSubmitted: false,
+        lastResolvedSceneId: activeRoom.state.lastResolvedSceneId || '',
+        revealedChoiceA: activeRoom.state.revealedChoiceA || '',
+        revealedChoiceB: activeRoom.state.revealedChoiceB || ''
+      });
+    }
+
     // Save reconnect info
     activeRoom.onMessage('PRIVATE_SYNC', (data: { private: ClientPrivateState; availableChoiceIds: string[] }) => {
       setPrivateState(data.private);
@@ -52,20 +71,22 @@ export function useColyseus() {
       let playerAChoiceSubmitted = false;
       let playerBChoiceSubmitted = false;
 
-      state.players.forEach((p: any) => {
-        if (p.role === 'playerA') {
-          playerAConnected = p.connected;
-          playerAReady = p.ready;
-          playerAChoiceSubmitted = p.choiceSubmitted;
-        } else if (p.role === 'playerB') {
-          playerBConnected = p.connected;
-          playerBReady = p.ready;
-          playerBChoiceSubmitted = p.choiceSubmitted;
-        }
-      });
+      if (state.players) {
+        state.players.forEach((p: any) => {
+          if (p.role === 'playerA') {
+            playerAConnected = p.connected;
+            playerAReady = p.ready;
+            playerAChoiceSubmitted = p.choiceSubmitted;
+          } else if (p.role === 'playerB') {
+            playerBConnected = p.connected;
+            playerBReady = p.ready;
+            playerBChoiceSubmitted = p.choiceSubmitted;
+          }
+        });
+      }
 
       setSharedState({
-        roomCode: state.roomCode,
+        roomCode: state.roomCode || activeRoom.id.substring(0, 6).toUpperCase(),
         status: state.status,
         currentSceneId: state.currentSceneId,
         chapter: state.chapter,
@@ -88,15 +109,19 @@ export function useColyseus() {
 
     activeRoom.onError((code, message) => {
       setError(message || `Room error: ${code}`);
+      console.error(`Colyseus room error: ${code}`, message);
     });
   }, []);
 
   const createRoom = async () => {
     try {
+      console.log('Connecting to Colyseus at:', COLYSEUS_URL);
       const activeRoom = await client.create('game_room');
+      console.log('Room created successfully:', activeRoom.id);
       bindRoom(activeRoom);
       return activeRoom;
     } catch (err: any) {
+      console.error('Error in createRoom:', err);
       setError(err.message || 'Failed to create room');
       throw err;
     }

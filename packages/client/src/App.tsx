@@ -84,6 +84,7 @@ export const App: React.FC = () => {
         onCreateRoom={handleCreate}
         onJoinRoom={handleJoin}
         loading={loading}
+        errorMessage={error}
       />
     );
   }
