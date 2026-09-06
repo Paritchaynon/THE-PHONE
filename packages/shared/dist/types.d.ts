@@ -65,6 +65,8 @@ export interface ClientSharedState {
     playerBReady: boolean;
     playerAChoiceSubmitted: boolean;
     playerBChoiceSubmitted: boolean;
+    playerAContinued?: boolean;
+    playerBContinued?: boolean;
     lastResolvedSceneId?: string;
     revealedChoiceA?: string;
     revealedChoiceB?: string;

@@ -15,6 +15,10 @@
   background: radial-gradient(circle at 50% 30%, #171b26 0%, #0d1017 50%, #07080c 100%);
 }
 
+.bg-radial-vignette {
+  background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.75) 100%);
+}
+
 @keyframes pulseSlow {
   0%, 100% {
     opacity: 0.2;

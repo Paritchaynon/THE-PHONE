@@ -2,7 +2,7 @@ import React from 'react';
 import { useI18n } from '../i18n/I18nContext';
 import { sound } from '../utils/sound';
 import { ClientSharedState, ClientPrivateState } from '@between-us/shared';
-import { Eye, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Eye, ArrowRight, CheckCircle2, Loader2, Sparkles, Users } from 'lucide-react';
 
 interface RevealScreenProps {
   shared: ClientSharedState;
@@ -14,6 +14,9 @@ export const RevealScreen: React.FC<RevealScreenProps> = ({ shared, privateState
   const { t, getChoiceText } = useI18n();
   const isPlayerA = privateState.role === 'playerA';
 
+  const myContinued = isPlayerA ? Boolean(shared.playerAContinued) : Boolean(shared.playerBContinued);
+  const partnerContinued = isPlayerA ? Boolean(shared.playerBContinued) : Boolean(shared.playerAContinued);
+
   const myChoiceText = isPlayerA
     ? getChoiceText(shared.revealedChoiceA || '')
     : getChoiceText(shared.revealedChoiceB || '');
@@ -24,7 +27,10 @@ export const RevealScreen: React.FC<RevealScreenProps> = ({ shared, privateState
 
   return (
     <div className="relative min-h-screen w-full flex flex-col items-center justify-center p-6 md:p-12 bg-radial-dark text-slate-100 font-thai">
-      <div className="w-full max-w-xl bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 flex flex-col items-center shadow-2xl relative">
+      {/* Visual Ambient Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-rose-600/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-xl bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-8 flex flex-col items-center shadow-2xl relative z-10 animate-fade-in">
         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-rose-400 mb-2">
           <Eye className="w-4 h-4" />
           <span>{t('revealed_title')}</span>
@@ -35,39 +41,97 @@ export const RevealScreen: React.FC<RevealScreenProps> = ({ shared, privateState
         </h2>
 
         {/* Decisions comparison */}
-        <div className="w-full flex flex-col gap-4 mb-8">
+        <div className="w-full flex flex-col gap-4 mb-6">
           {/* My Choice */}
-          <div className="p-4 rounded-xl bg-white/[0.03] border border-white/10">
-            <span className="text-[11px] font-mono uppercase text-slate-400 block mb-1">
-              {t('your_choice')}
-            </span>
-            <p className="text-sm md:text-base text-white font-light">
+          <div className="p-4 md:p-5 rounded-2xl bg-white/[0.03] border border-white/10 relative overflow-hidden">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[11px] font-mono uppercase text-slate-400">
+                {t('your_choice')}
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/5 text-slate-300 border border-white/10">
+                {isPlayerA ? t('role_a') : t('role_b')}
+              </span>
+            </div>
+            <p className="text-sm md:text-base text-white font-light leading-relaxed">
               {myChoiceText || '...'}
             </p>
           </div>
 
           {/* Partner Choice */}
-          <div className="p-4 rounded-xl bg-rose-500/[0.04] border border-rose-500/20">
-            <span className="text-[11px] font-mono uppercase text-rose-300 block mb-1">
-              {t('partner_chose')}
-            </span>
-            <p className="text-sm md:text-base text-rose-100 font-light">
+          <div className="p-4 md:p-5 rounded-2xl bg-rose-500/[0.05] border border-rose-500/20 relative overflow-hidden">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[11px] font-mono uppercase text-rose-300">
+                {t('partner_chose')}
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/20">
+                {isPlayerA ? t('role_b') : t('role_a')}
+              </span>
+            </div>
+            <p className="text-sm md:text-base text-rose-100 font-light leading-relaxed">
               {partnerChoiceText || '...'}
             </p>
           </div>
         </div>
 
+        {/* Both Player Status & Notification Banner */}
+        <div className="w-full mb-6 p-4 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col gap-3">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-400">
+            <div className="flex items-center gap-1.5">
+              <Users className="w-3.5 h-3.5 text-rose-400" />
+              <span>{t('continue_both_hint')}</span>
+            </div>
+            <span className="text-[11px] text-rose-400/90 font-medium">
+              {[myContinued, partnerContinued].filter(Boolean).length}/2 พร้อมแล้ว
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all ${
+              myContinued
+                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                : 'bg-white/5 border-white/10 text-slate-400'
+            }`}>
+              {myContinued ? (
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              ) : (
+                <div className="w-3.5 h-3.5 rounded-full border border-slate-500 shrink-0" />
+              )}
+              <span className="truncate">คุณ: {myContinued ? 'กดยืนยันแล้ว' : 'ยังไม่กด'}</span>
+            </div>
+
+            <div className={`p-2.5 rounded-xl border flex items-center gap-2 transition-all ${
+              partnerContinued
+                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                : 'bg-white/5 border-white/10 text-slate-400'
+            }`}>
+              {partnerContinued ? (
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              ) : (
+                <div className="w-3.5 h-3.5 rounded-full border border-slate-500 shrink-0" />
+              )}
+              <span className="truncate">อีกฝ่าย: {partnerContinued ? 'กดยืนยันแล้ว' : 'กำลังอ่าน...'}</span>
+            </div>
+          </div>
+        </div>
+
         {/* Continue Action */}
-        <button
-          onClick={() => {
-            sound.playClick();
-            onContinue();
-          }}
-          className="w-full py-4 rounded-xl bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white font-medium tracking-wide flex items-center justify-center gap-2 border border-white/20 transition-all transform hover:-translate-y-0.5"
-        >
-          <span>{t('continue')}</span>
-          <ArrowRight className="w-4 h-4" />
-        </button>
+        {!myContinued ? (
+          <button
+            onClick={() => {
+              sound.playClick();
+              onContinue();
+            }}
+            className="w-full py-4 rounded-xl bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white font-medium tracking-wide flex items-center justify-center gap-2 border border-white/20 transition-all transform hover:-translate-y-0.5 shadow-lg shadow-rose-950/40 cursor-pointer"
+          >
+            <span>{t('continue')}</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        ) : (
+          <div className="w-full py-4 rounded-xl bg-white/[0.04] border border-white/15 flex items-center justify-center gap-2 text-slate-300 text-sm">
+            <Loader2 className="w-4 h-4 text-rose-400 animate-spin" />
+            <span>{partnerContinued ? 'กำลังเริ่มฉากถัดไป...' : t('waiting_partner_continue')}</span>
+          </div>
+        )}
       </div>
     </div>
   );

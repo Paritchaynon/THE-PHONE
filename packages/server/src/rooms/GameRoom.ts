@@ -83,6 +83,8 @@ export class GameRoom extends Room<GameRoomStateSchema> {
 
       if (sessionA?.hasChosen && sessionB?.hasChosen) {
         this.advanceToNextScene();
+      } else {
+        this.broadcastSharedSync();
       }
     });
 
@@ -258,6 +260,8 @@ export class GameRoom extends Room<GameRoomStateSchema> {
   public getSharedStatePayload(): ClientSharedState {
     const sessionA = this.roleAssigned.playerA ? this.state.players.get(this.roleAssigned.playerA) : undefined;
     const sessionB = this.roleAssigned.playerB ? this.state.players.get(this.roleAssigned.playerB) : undefined;
+    const sessionDataA = this.roleAssigned.playerA ? this.playerSessions.get(this.roleAssigned.playerA) : undefined;
+    const sessionDataB = this.roleAssigned.playerB ? this.playerSessions.get(this.roleAssigned.playerB) : undefined;
 
     return {
       roomCode: this.state.roomCode,
@@ -270,6 +274,8 @@ export class GameRoom extends Room<GameRoomStateSchema> {
       playerBReady: Boolean(sessionB?.ready),
       playerAChoiceSubmitted: Boolean(sessionA?.choiceSubmitted),
       playerBChoiceSubmitted: Boolean(sessionB?.choiceSubmitted),
+      playerAContinued: Boolean(sessionDataA?.hasChosen),
+      playerBContinued: Boolean(sessionDataB?.hasChosen),
       lastResolvedSceneId: this.state.lastResolvedSceneId,
       revealedChoiceA: this.state.revealedChoiceA,
       revealedChoiceB: this.state.revealedChoiceB,
