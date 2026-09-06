@@ -99,18 +99,29 @@ export function useColyseus() {
       let playerBChoiceSubmitted = false;
 
       if (state.players) {
-        state.players.forEach((p: any) => {
+        const checkPlayer = (p: any) => {
+          if (!p) return;
           if (p.role === 'playerA') {
-            playerAConnected = p.connected;
-            playerAReady = p.ready;
-            playerAChoiceSubmitted = p.choiceSubmitted;
+            playerAConnected = Boolean(p.connected);
+            playerAReady = Boolean(p.ready);
+            playerAChoiceSubmitted = Boolean(p.choiceSubmitted);
           } else if (p.role === 'playerB') {
-            playerBConnected = p.connected;
-            playerBReady = p.ready;
-            playerBChoiceSubmitted = p.choiceSubmitted;
+            playerBConnected = Boolean(p.connected);
+            playerBReady = Boolean(p.ready);
+            playerBChoiceSubmitted = Boolean(p.choiceSubmitted);
           }
-        });
+        };
+
+        if (typeof state.players.forEach === 'function') {
+          state.players.forEach((p: any) => checkPlayer(p));
+        } else if (typeof state.players.values === 'function') {
+          for (const p of state.players.values()) checkPlayer(p);
+        } else if (typeof state.players === 'object') {
+          Object.values(state.players).forEach((p: any) => checkPlayer(p));
+        }
       }
+
+      console.log(`[Colyseus StateChange] Players: A(${playerAConnected}, ready=${playerAReady}), B(${playerBConnected}, ready=${playerBReady}), Status: ${state.status}`);
 
       setSharedState({
         roomCode: state.roomCode || activeRoom.id.substring(0, 6).toUpperCase(),
