@@ -11,6 +11,7 @@ import { Loader2 } from 'lucide-react';
 export const App: React.FC = () => {
   const {
     connected,
+    error,
     sharedState,
     privateState,
     availableChoices,
@@ -112,24 +113,43 @@ export const App: React.FC = () => {
   }
 
   // Game Completed -> Result Page
-  if (sharedState.status === 'COMPLETED' && sharedState.result) {
+  if (sharedState.status === 'COMPLETED') {
+    if (sharedState.result) {
+      return (
+        <ResultPage
+          result={sharedState.result}
+          onPlayAgain={() => {
+            window.location.reload();
+          }}
+        />
+      );
+    }
     return (
-      <ResultPage
-        result={sharedState.result}
-        onPlayAgain={() => {
-          window.location.reload();
-        }}
-      />
+      <div className="min-h-screen w-full flex flex-col items-center justify-center bg-radial-dark text-white font-thai p-6">
+        <Loader2 className="w-8 h-8 text-rose-400 animate-spin mb-4" />
+        <p className="text-sm font-light text-slate-300">กำลังประมวลผลความสัมพันธ์...</p>
+      </div>
     );
   }
 
   // Active Game Scene
+  if (sharedState.status === 'PLAYING') {
+    return (
+      <GameScene
+        shared={sharedState}
+        privateState={privateState}
+        availableChoices={availableChoices}
+        onSubmitChoice={submitChoice}
+      />
+    );
+  }
+
+  // Fallback to Lobby or Scene
   return (
-    <GameScene
+    <LobbyPage
       shared={sharedState}
       privateState={privateState}
-      availableChoices={availableChoices}
-      onSubmitChoice={submitChoice}
+      onReady={sendReady}
     />
   );
 };
