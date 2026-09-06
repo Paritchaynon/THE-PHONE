@@ -1,0 +1,44 @@
+{
+  "archetypes": {
+    "THE_GUARDIAN": {
+      "name": "THE GUARDIAN",
+      "subtitle": "The Guardian",
+      "description": "You protect the relationship with fierce loyalty and caution, though striving to keep control can inadvertently create emotional distance."
+    },
+    "THE_SEEKER": {
+      "name": "THE SEEKER",
+      "subtitle": "The Truth Seeker",
+      "description": "You value honesty, deep intimacy, and utter clarity. You are unafraid to ask difficult questions to reach raw truth."
+    },
+    "THE_ANCHOR": {
+      "name": "THE ANCHOR",
+      "subtitle": "The Grounded Anchor",
+      "description": "A pillar of trust, forgiveness, and quiet resilience. You are committed to being a reliable safe harbor."
+    },
+    "THE_MIRROR": {
+      "name": "THE MIRROR",
+      "subtitle": "The Empathic Mirror",
+      "description": "You absorb and mirror the subtle emotional shifts of your partner, deeply attuned to every unspoken glance."
+    },
+    "THE_FREE_SOUL": {
+      "name": "THE FREE SOUL",
+      "subtitle": "The Free Soul",
+      "description": "You treasure genuine connection while needing emotional room to breathe and preserve your individuality."
+    },
+    "THE_WALL": {
+      "name": "THE WALL",
+      "subtitle": "The Protective Wall",
+      "description": "Built from past hurt, your emotional walls shield you from pain. Silence and distance become your instinctive shelter."
+    },
+    "THE_HEALER": {
+      "name": "THE HEALER",
+      "subtitle": "The Restorative Healer",
+      "description": "Empathetic and forgiving, you instinctively nurture broken pieces and hold gentle space for emotional restoration."
+    },
+    "THE_FIRE": {
+      "name": "THE FIRE",
+      "subtitle": "The Passionate Fire",
+      "description": "Intense, expressive, and unhesitating. You bring incandescent passion and unfiltered honesty into the connection."
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "dynamics": {
+    "THE_BALANCED_PAIR": {
+      "name": "THE BALANCED PAIR",
+      "subtitle": "The Balanced Pair",
+      "quote": "We learned to take a step back so that love has room to breathe and flourish."
+    },
+    "THE_CHASER_AND_THE_WALL": {
+      "name": "THE CHASER & THE WALL",
+      "subtitle": "The Chaser & The Wall",
+      "quote": "One constantly pursues certainty, while the other builds barriers to guard their inner vulnerability."
+    },
+    "THE_MIRROR_AND_THE_MIRROR": {
+      "name": "THE MIRROR & THE MIRROR",
+      "subtitle": "The Dual Mirrors",
+      "quote": "We reflect each other's hidden aches and quiet truths with unfiltered honesty."
+    },
+    "THE_FIRE_AND_THE_WATER": {
+      "name": "THE FIRE & THE WATER",
+      "subtitle": "Fire and Water",
+      "quote": "One burns with raw, incandescent emotion; the other gently cools the tempest."
+    },
+    "THE_GUARDIAN_AND_THE_SEEKER": {
+      "name": "THE GUARDIAN & THE SEEKER",
+      "subtitle": "The Guardian & The Seeker",
+      "quote": "Protective devotion meets an unrelenting quest for authentic truth."
+    },
+    "THE_ANCHOR_AND_THE_FREE_SOUL": {
+      "name": "THE ANCHOR & THE FREE SOUL",
+      "subtitle": "The Anchor & The Free Soul",
+      "quote": "A peaceful harbor that welcomes the wandering breeze without ever trying to cage it."
+    },
+    "THE_HEALERS": {
+      "name": "THE HEALERS",
+      "subtitle": "The Kindred Healers",
+      "quote": "Two fractured spirits that gently hold space to mend each other's tender wounds."
+    },
+    "THE_STRANGERS": {
+      "name": "THE STRANGERS",
+      "subtitle": "Two Strangers Beside Each Other",
+      "quote": "Sitting just inches apart, yet feeling an ocean of unspoken distance between you."
+    }
+  }
+}

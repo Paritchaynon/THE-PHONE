@@ -1,0 +1,91 @@
+{
+  "scenes": {
+    "ch1_intro": {
+      "chapter_title": "Chapter 1: FIRST IMPRESSION",
+      "text": "Friday evening. Soft rain taps against the glass of a small, quiet dining spot. The two of you sit across from each other after a long, exhausting week. The air is still, but beneath the surface, something unspoken lingers.",
+      "prompt": "As your eyes meet, what is the first thing you feel?"
+    },
+    "ch1_observation": {
+      "chapter_title": "Chapter 1: Silence Across the Table",
+      "playerA_perspective": "You notice your partner looks distant and exhausted, sighing softly. They seem burdened by something, hesitating whether to share it.",
+      "playerB_perspective": "You are drained from days of persistent worries. You crave rest, but you fear bringing down the mood of the evening.",
+      "prompt_A": "How do you respond to their quiet mood?",
+      "prompt_B": "They look at you with quiet concern. How do you respond?"
+    },
+    "ch2_phone_vibration": {
+      "chapter_title": "Chapter 2: Small Things & The Notification",
+      "text": "While one of you steps up toward the counter, a phone left face down on the table buzzes with a brief glow. A preview flashes: 'I miss how we used to talk...'",
+      "prompt": "A quiet secret stirs in the space between you."
+    },
+    "ch2_phone_choice": {
+      "chapter_title": "Chapter 2: The Unintended Message",
+      "playerA_perspective": "The phone vibrates on the table right in front of you. The preview text is unmistakable, sent by a name you don't recognize. Your partner is heading back right now.",
+      "playerB_perspective": "You realize you left your phone on the table. Earlier today, someone from your past messaged you about unfinished feelings. Your heart races as you walk back.",
+      "prompt_A": "What do you do with the phone lying before you?",
+      "prompt_B": "You step back to the table and catch their eyes. How do you handle it?"
+    },
+    "ch3_confrontation": {
+      "chapter_title": "Chapter 3: The Confrontation",
+      "playerA_perspective": "The silence that follows is suffocating. You look into their eyes, and lingering doubt turns into a quiet ache.",
+      "playerB_perspective": "You can tell the look in their eyes isn't mere curiosity; it's a silent question about trust.",
+      "prompt_A": "How do you open this conversation?",
+      "prompt_B": "How do you respond to the doubt in their eyes?"
+    },
+    "ch5_vulnerability": {
+      "chapter_title": "Chapter 5: The Past & Vulnerability",
+      "playerA_perspective": "The conversation shifts deeper into unspoken territories. You both begin touching on deep-seated fears—fear of being abandoned or betrayed again.",
+      "playerB_perspective": "You never thought you would share this with anyone. The walls you erected to stay safe are trembling in front of them.",
+      "prompt_A": "Are you ready to reveal your deepest fear?",
+      "prompt_B": "Are you ready to lower your walls and let them in?"
+    },
+    "ch6_breaking_point": {
+      "chapter_title": "Chapter 6: The Breaking Point",
+      "playerA_perspective": "A crossroads where your desires and boundaries clash. Stepping back could feel like losing yourself, or it could be the only way to save the connection.",
+      "playerB_perspective": "Tension peaks. Pride whispers to stand firm, but a deeper voice dreads that this might be the last genuine moment you share.",
+      "prompt_A": "Do you choose compromise or stand your ground?",
+      "prompt_B": "Do you accept the difference or protect your pride?"
+    },
+    "ch7_final_question": {
+      "chapter_title": "Chapter 7: THE LAST QUESTION",
+      "playerA_perspective": "After navigating secrets, misunderstandings, and raw truths, you must decide how you truly want this relationship to exist going forward.",
+      "playerB_perspective": "Every word and hesitation has led to this singular point. No pretense remains—only what you choose to do next.",
+      "prompt_A": "What is your final choice for this relationship?",
+      "prompt_B": "What final answer do you give to them?"
+    }
+  },
+  "choices": {
+    "continue": "Take a breath and continue",
+    "a_ask_gently": "Gently reach across the table: 'You seem overwhelmed today. Do you want to talk about it?'",
+    "a_give_space": "Give them quiet space, waiting until they feel ready to speak on their own.",
+    "a_demand_attention": "Ask directly: 'What's wrong? Why are you being so quiet and distant?'",
+    "b_open_up": "Meet their eyes and confess honestly: 'I'm honestly overwhelmed today. There's so much on my mind...'",
+    "b_deflect_smile": "Put on a subtle reassuring smile: 'Nothing much, just work stress. Let's enjoy dinner.'",
+    "b_show_irritation": "Deflect with slight frustration: 'Please don't push right now. I just need a minute of quiet.'",
+    "a_peek_phone": "Reach over and tap the screen to view the full message out of anxiety.",
+    "a_turn_face_down": "Turn the phone face down to honor their privacy, even with questions racing in your mind.",
+    "a_call_out_partner": "Call out immediately: 'Hey... you just got a notification on your phone.'",
+    "b_hurry_hide": "Quickly hurry over and slip the phone into your pocket without a word.",
+    "b_explain_voluntarily": "Sit down, meet their gaze, and speak openly: 'That message was an old contact. I'm sorry for not mentioning it earlier.'",
+    "b_act_defensive": "Frown slightly: 'Why are you staring at my phone like that? Don't you trust me?'",
+    "a_seek_truth": "Speak sincerely: 'I really just want to understand what's going on. Can you explain it to me?'",
+    "a_express_hurt": "Be honest about your pain: 'It hurts when I feel like you're keeping secrets from me.'",
+    "a_shut_down": "Withdraw into yourself, keeping emotional distance and staying silent.",
+    "b_apologize_fully": "Apologize with sincerity: 'I'm genuinely sorry. I never intended to hide things or hurt you.'",
+    "b_justify_actions": "Defend your position: 'There is nothing to worry about. You're overthinking this.'",
+    "b_plead_understanding": "Plead for patience: 'Please understand, I had reasons and I'm trying my best.'",
+    "a_share_deepest_fear": "Open up about your deepest fear: 'I'm afraid that one day, I won't be enough for you.'",
+    "a_stay_guarded": "Guard your deepest emotions, reluctant to show that kind of vulnerability.",
+    "b_share_childhood_wound": "Reveal a personal wound: 'I pull back because in my past, people always left when things got real.'",
+    "b_change_subject": "Steer the topic gently away to avoid emotional exposure.",
+    "a_willing_compromise": "Offer a heartfelt compromise so that you both can move forward together.",
+    "a_hold_ground": "Hold your boundaries firmly, refusing to bend your principles.",
+    "b_let_go_pride": "Swallow your pride, offer an apology, and reach out to make peace.",
+    "b_demand_validation": "Insist that they acknowledge your perspective and feelings first.",
+    "a_choose_them_fully": "Choose to trust completely, take the emotional risk, and embrace the relationship whole-heartedly.",
+    "a_choose_cautious_healing": "Choose to stand by them, but take time to rebuild trust step by step.",
+    "a_let_go_walk_away": "Choose to let go, acknowledging that some differences cannot be mended.",
+    "b_choose_them_fully": "Lower every defensive wall and invest your whole heart into this bond.",
+    "b_choose_cautious_healing": "Ask for a second chance to earn back trust with patience and care.",
+    "b_let_go_walk_away": "Step back and walk away, sparing both of you from further heartbreak."
+  }
+}

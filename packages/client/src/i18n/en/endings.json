@@ -1,0 +1,64 @@
+{
+  "endings": {
+    "TOGETHER": {
+      "title": "TOGETHER",
+      "subtitle": "Moving Forward Hand in Hand",
+      "narrative": "Despite fractures and uncomfortable silences, radical honesty and forgiveness led you both to hold on tighter than before."
+    },
+    "REBUILD": {
+      "title": "REBUILD",
+      "subtitle": "Starting to Rebuild",
+      "narrative": "Broken trust cannot be repaired overnight. You both accept the raw truth and commit to laying new stones, one step at a time."
+    },
+    "HONEST_LOVERS": {
+      "title": "HONEST LOVERS",
+      "subtitle": "Love Without Pretense",
+      "narrative": "The courage to speak unfiltered truth without fear of condemnation has elevated your connection into pure intimacy."
+    },
+    "QUIET_LOVERS": {
+      "title": "QUIET LOVERS",
+      "subtitle": "Serenity in Silence",
+      "narrative": "Grand declarations are unnecessary. Simply sitting beside each other and holding each other's vulnerability is more than enough."
+    },
+    "BEST_FRIENDS": {
+      "title": "BEST FRIENDS",
+      "subtitle": "An Unshakable Companionship",
+      "narrative": "Deep mutual understanding and ease in being your genuine selves make this bond as enduring as lifelong confidants."
+    },
+    "UNFINISHED": {
+      "title": "UNFINISHED",
+      "subtitle": "An Unwritten Chapter",
+      "narrative": "Unanswered questions and unresolved feelings linger in the air. Your journey leaves an open question yet to unfold."
+    },
+    "ONE_LAST_CHANCE": {
+      "title": "ONE LAST CHANCE",
+      "subtitle": "One Last Chance",
+      "narrative": "Hope has not extinguished. You both take one final leap of faith to discover if what remains is worth protecting."
+    },
+    "FORGIVEN": {
+      "title": "FORGIVEN",
+      "subtitle": "Liberating Forgiveness",
+      "narrative": "Missteps are acknowledged, and genuine forgiveness releases both souls from the lingering weight of past wounds."
+    },
+    "MISUNDERSTOOD": {
+      "title": "MISUNDERSTOOD",
+      "subtitle": "Lost in Translation",
+      "narrative": "Locked in personal assumptions, unspoken thoughts turn into silence, slowly etching a rift difficult to bridge."
+    },
+    "DISTANT": {
+      "title": "DISTANT",
+      "subtitle": "Growing Distance",
+      "narrative": "The walls erected for self-protection have turned into a barrier, rendering you faint silhouettes to one another."
+    },
+    "SEPARATE": {
+      "title": "SEPARATE",
+      "subtitle": "Parting of Ways",
+      "narrative": "Accepting that sometimes love alone cannot reconcile irreconcilable differences, you release each other with mutual respect."
+    },
+    "STRANGERS": {
+      "title": "STRANGERS",
+      "subtitle": "Strangers Again",
+      "narrative": "From those who knew each other's secrets to strangers who glance away. Only quiet memories remain as time moves on."
+    }
+  }
+}
