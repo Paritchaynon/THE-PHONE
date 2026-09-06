@@ -5,6 +5,10 @@ import { ClientPrivateState, ClientSharedState } from '@between-us/shared';
 export const getColyseusUrl = () => {
   if (import.meta.env.VITE_SERVER_URL) {
     let raw = import.meta.env.VITE_SERVER_URL.trim();
+    // If Render passes only the service slug/name without domain (e.g. between-us-server-79k6)
+    if (!raw.includes('.') && !raw.includes('localhost') && !raw.includes(':')) {
+      raw = `${raw}.onrender.com`;
+    }
     if (raw.startsWith('http://')) return raw.replace('http://', 'ws://');
     if (raw.startsWith('https://')) return raw.replace('https://', 'wss://');
     if (raw.startsWith('ws://') || raw.startsWith('wss://')) return raw;
@@ -23,6 +27,9 @@ export const getColyseusUrl = () => {
 export const getHttpServerUrl = () => {
   if (import.meta.env.VITE_SERVER_URL) {
     let raw = import.meta.env.VITE_SERVER_URL.trim();
+    if (!raw.includes('.') && !raw.includes('localhost') && !raw.includes(':')) {
+      raw = `${raw}.onrender.com`;
+    }
     if (raw.startsWith('ws://')) return raw.replace('ws://', 'http://');
     if (raw.startsWith('wss://')) return raw.replace('wss://', 'https://');
     if (raw.startsWith('http://') || raw.startsWith('https://')) return raw;
