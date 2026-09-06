@@ -2,9 +2,20 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Client, Room } from 'colyseus.js';
 import { ClientPrivateState, ClientSharedState } from '@between-us/shared';
 
-const COLYSEUS_URL = window.location.hostname === 'localhost' 
-  ? 'ws://localhost:2567' 
-  : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`;
+const getColyseusUrl = () => {
+  if (import.meta.env.VITE_SERVER_URL) {
+    const raw = import.meta.env.VITE_SERVER_URL;
+    if (raw.startsWith('http://')) return raw.replace('http://', 'ws://');
+    if (raw.startsWith('https://')) return raw.replace('https://', 'wss://');
+    if (raw.startsWith('ws://') || raw.startsWith('wss://')) return raw;
+    return `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${raw}`;
+  }
+  return window.location.hostname === 'localhost' 
+    ? 'ws://localhost:2567' 
+    : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`;
+};
+
+const COLYSEUS_URL = getColyseusUrl();
 
 export function useColyseus() {
   const [client] = useState(() => new Client(COLYSEUS_URL));
