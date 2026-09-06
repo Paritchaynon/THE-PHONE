@@ -80,6 +80,12 @@ export function useColyseus() {
       });
     }
 
+    // Authoritative Shared State broadcast directly from server
+    activeRoom.onMessage('SHARED_SYNC', (shared: ClientSharedState) => {
+      console.log('[Colyseus SHARED_SYNC]', shared);
+      setSharedState(shared);
+    });
+
     // Save reconnect info
     activeRoom.onMessage('PRIVATE_SYNC', (data: { private: ClientPrivateState; availableChoiceIds: string[] }) => {
       setPrivateState(data.private);
@@ -123,21 +129,22 @@ export function useColyseus() {
 
       console.log(`[Colyseus StateChange] Players: A(${playerAConnected}, ready=${playerAReady}), B(${playerBConnected}, ready=${playerBReady}), Status: ${state.status}`);
 
-      setSharedState({
-        roomCode: state.roomCode || activeRoom.id.substring(0, 6).toUpperCase(),
-        status: state.status,
-        currentSceneId: state.currentSceneId,
-        chapter: state.chapter,
-        playerAConnected,
-        playerBConnected,
-        playerAReady,
-        playerBReady,
-        playerAChoiceSubmitted,
-        playerBChoiceSubmitted,
-        lastResolvedSceneId: state.lastResolvedSceneId,
-        revealedChoiceA: state.revealedChoiceA,
-        revealedChoiceB: state.revealedChoiceB
-      });
+      setSharedState((prev) => ({
+        roomCode: state.roomCode || prev?.roomCode || activeRoom.id.substring(0, 6).toUpperCase(),
+        status: state.status || prev?.status || 'LOBBY',
+        currentSceneId: state.currentSceneId || prev?.currentSceneId || 'ch1_intro',
+        chapter: state.chapter || prev?.chapter || 1,
+        playerAConnected: playerAConnected || Boolean(prev?.playerAConnected),
+        playerBConnected: playerBConnected || Boolean(prev?.playerBConnected),
+        playerAReady: playerAReady || Boolean(prev?.playerAReady),
+        playerBReady: playerBReady || Boolean(prev?.playerBReady),
+        playerAChoiceSubmitted: playerAChoiceSubmitted || Boolean(prev?.playerAChoiceSubmitted),
+        playerBChoiceSubmitted: playerBChoiceSubmitted || Boolean(prev?.playerBChoiceSubmitted),
+        lastResolvedSceneId: state.lastResolvedSceneId ?? prev?.lastResolvedSceneId,
+        revealedChoiceA: state.revealedChoiceA ?? prev?.revealedChoiceA,
+        revealedChoiceB: state.revealedChoiceB ?? prev?.revealedChoiceB,
+        result: prev?.result
+      }));
     });
 
     activeRoom.onLeave((code) => {
@@ -154,8 +161,15 @@ export function useColyseus() {
   const createRoom = async () => {
     try {
       console.log('Connecting to Colyseus at:', COLYSEUS_URL);
-      const activeRoom = await client.create('game_room');
-      console.log('Room created successfully:', activeRoom.id);
+      // Generate a clean 6-character uppercase room code
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let generatedCode = '';
+      for (let i = 0; i < 6; i++) {
+        generatedCode += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+
+      const activeRoom = await client.create('game_room', { roomCode: generatedCode });
+      console.log('Room created successfully:', activeRoom.id, 'with code:', generatedCode);
       bindRoom(activeRoom);
       return activeRoom;
     } catch (err: any) {
@@ -170,25 +184,34 @@ export function useColyseus() {
       const formattedCode = roomCode.trim().toUpperCase();
       console.log('Attempting to join room with code:', formattedCode);
 
-      // Query available rooms filtered by roomCode or roomId
-      const rooms = await client.getAvailableRooms('game_room');
-      console.log('Available rooms on server:', rooms);
-
-      const target = rooms.find(
-        (r) =>
-          (r.metadata && r.metadata.roomCode === formattedCode) ||
-          r.roomId.toUpperCase().startsWith(formattedCode) ||
-          r.roomId.toUpperCase() === formattedCode
-      );
-
       const reconnectToken = sessionStorage.getItem('between_us_reconnect_token');
-      let activeRoom: Room;
 
-      if (target) {
-        console.log('Found existing room:', target.roomId);
-        activeRoom = await client.joinById(target.roomId, { reconnectToken, roomCode: formattedCode });
+      // 1. Try finding existing room from available rooms
+      let targetRoomId: string | null = null;
+      try {
+        const rooms = await client.getAvailableRooms('game_room');
+        console.log('Available rooms on server:', rooms);
+
+        const target = rooms.find(
+          (r) =>
+            (r.metadata && r.metadata.roomCode === formattedCode) ||
+            r.roomId.toUpperCase().startsWith(formattedCode) ||
+            r.roomId.toUpperCase() === formattedCode
+        );
+        if (target) {
+          targetRoomId = target.roomId;
+        }
+      } catch (searchErr) {
+        console.warn('Could not query getAvailableRooms, falling back to direct join', searchErr);
+      }
+
+      let activeRoom: Room;
+      if (targetRoomId) {
+        console.log('Found existing room by ID:', targetRoomId);
+        activeRoom = await client.joinById(targetRoomId, { reconnectToken, roomCode: formattedCode });
       } else {
-        console.log('No existing room matched metadata, joining with joinOrCreate by roomCode...');
+        console.log('Joining room by roomCode:', formattedCode);
+        // Using joinOrCreate with roomCode which matches Colyseus filterBy(['roomCode'])
         activeRoom = await client.joinOrCreate('game_room', { roomCode: formattedCode, reconnectToken });
       }
 

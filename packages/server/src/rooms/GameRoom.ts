@@ -16,6 +16,7 @@ export class GameRoom extends Room<GameRoomStateSchema> {
   private playerSessions: Map<string, PlayerSessionData> = new Map(); // sessionId -> PlayerSessionData
   private tokenToSessionMap: Map<string, PlayerSessionData> = new Map(); // token -> PlayerSessionData
   private roleAssigned: { playerA?: string; playerB?: string } = {};
+  private completedResult?: GameResultSummary;
 
   onCreate(options: any) {
     this.setState(new GameRoomStateSchema());
@@ -45,6 +46,8 @@ export class GameRoom extends Room<GameRoomStateSchema> {
 
       if (readyCount === 2 && this.state.status === 'LOBBY') {
         this.startGame();
+      } else {
+        this.broadcastSharedSync();
       }
     });
 
@@ -60,6 +63,7 @@ export class GameRoom extends Room<GameRoomStateSchema> {
 
         // Send confirmation only to this client
         this.sendPrivateSync(client);
+        this.broadcastSharedSync();
 
         // Check if both players have submitted choice
         this.checkSceneResolution();
@@ -115,6 +119,7 @@ export class GameRoom extends Room<GameRoomStateSchema> {
       this.state.players.set(client.sessionId, playerSchema);
 
       this.sendPrivateSync(client);
+      this.broadcastSharedSync();
       return;
     }
 
@@ -152,6 +157,7 @@ export class GameRoom extends Room<GameRoomStateSchema> {
     this.state.players.set(client.sessionId, pSchema);
 
     this.sendPrivateSync(client);
+    this.broadcastSharedSync();
   }
 
   async onLeave(client: Client, consented: boolean) {
@@ -159,12 +165,16 @@ export class GameRoom extends Room<GameRoomStateSchema> {
     if (pSchema) {
       pSchema.connected = false;
     }
+    this.broadcastSharedSync();
 
     if (!consented) {
       try {
         // Wait up to 30 seconds for reconnect
         await this.allowReconnection(client, 30);
-        if (pSchema) pSchema.connected = true;
+        if (pSchema) {
+          pSchema.connected = true;
+          this.broadcastSharedSync();
+        }
       } catch (e) {
         // Did not reconnect in time
       }
@@ -179,6 +189,7 @@ export class GameRoom extends Room<GameRoomStateSchema> {
     // Reset player choice statuses
     this.resetPlayerChoiceStates();
     this.broadcastPrivateSync();
+    this.broadcastSharedSync();
   }
 
   private checkSceneResolution() {
@@ -197,6 +208,7 @@ export class GameRoom extends Room<GameRoomStateSchema> {
       if (res.isFinished && res.result) {
         this.state.status = 'COMPLETED';
         this.state.shareCode = res.result.shareCode;
+        this.completedResult = res.result;
         db.saveGame({
           id: this.roomId,
           roomCode: this.state.roomCode,
@@ -215,6 +227,9 @@ export class GameRoom extends Room<GameRoomStateSchema> {
       sessionB.hasChosen = false;
 
       this.broadcastPrivateSync();
+      this.broadcastSharedSync();
+    } else {
+      this.broadcastSharedSync();
     }
   }
 
@@ -227,6 +242,7 @@ export class GameRoom extends Room<GameRoomStateSchema> {
     }
     this.resetPlayerChoiceStates();
     this.broadcastPrivateSync();
+    this.broadcastSharedSync();
   }
 
   private resetPlayerChoiceStates() {
@@ -237,6 +253,32 @@ export class GameRoom extends Room<GameRoomStateSchema> {
     this.state.players.forEach((p) => {
       p.choiceSubmitted = false;
     });
+  }
+
+  public getSharedStatePayload(): ClientSharedState {
+    const sessionA = this.roleAssigned.playerA ? this.state.players.get(this.roleAssigned.playerA) : undefined;
+    const sessionB = this.roleAssigned.playerB ? this.state.players.get(this.roleAssigned.playerB) : undefined;
+
+    return {
+      roomCode: this.state.roomCode,
+      status: this.state.status as any,
+      currentSceneId: this.state.currentSceneId,
+      chapter: this.state.chapter,
+      playerAConnected: Boolean(sessionA?.connected),
+      playerBConnected: Boolean(sessionB?.connected),
+      playerAReady: Boolean(sessionA?.ready),
+      playerBReady: Boolean(sessionB?.ready),
+      playerAChoiceSubmitted: Boolean(sessionA?.choiceSubmitted),
+      playerBChoiceSubmitted: Boolean(sessionB?.choiceSubmitted),
+      lastResolvedSceneId: this.state.lastResolvedSceneId,
+      revealedChoiceA: this.state.revealedChoiceA,
+      revealedChoiceB: this.state.revealedChoiceB,
+      result: this.completedResult
+    };
+  }
+
+  public broadcastSharedSync() {
+    this.broadcast('SHARED_SYNC', this.getSharedStatePayload());
   }
 
   private sendPrivateSync(client: Client) {
