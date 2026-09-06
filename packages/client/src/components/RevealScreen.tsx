@@ -36,9 +36,24 @@ export const RevealScreen: React.FC<RevealScreenProps> = ({ shared, privateState
           <span>{t('revealed_title')}</span>
         </div>
 
-        <h2 className="text-xl md:text-2xl font-light text-white mb-6 text-center">
+        <h2 className="text-xl md:text-2xl font-light text-white mb-4 text-center">
           ช่วงเวลาแห่งการเปิดเผย
         </h2>
+
+        {/* Narrative Trajectory Shift Notification Banner */}
+        {shared.lastShiftDescription && (
+          <div className="w-full mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500/15 via-rose-500/15 to-purple-500/15 border border-amber-400/30 backdrop-blur-md flex items-start gap-3 shadow-lg animate-pulse-slow">
+            <Sparkles className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+            <div>
+              <span className="text-[11px] font-mono uppercase tracking-widest text-amber-300 font-bold block mb-1">
+                การเปลี่ยนแปลงของเส้นเรื่อง (STORY TRAJECTORY SHIFT)
+              </span>
+              <p className="text-xs md:text-sm text-slate-200 font-light leading-relaxed">
+                {shared.lastShiftDescription}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Decisions comparison */}
         <div className="w-full flex flex-col gap-4 mb-6">

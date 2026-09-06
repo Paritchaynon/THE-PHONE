@@ -133,6 +133,16 @@ export const GameScene: React.FC<GameSceneProps> = ({
           </div>
         )}
 
+        {/* Major Decision Alert (Critical divergence point) */}
+        {shared.majorChoicePrompt && (
+          <div className="w-full mb-3 px-4 py-2.5 rounded-xl bg-amber-500/15 border border-amber-400/40 backdrop-blur-md flex items-center gap-2.5 text-amber-200 animate-pulse-slow shadow-lg">
+            <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+            <span className="text-xs font-mono font-medium leading-tight">
+              {shared.majorChoicePrompt}
+            </span>
+          </div>
+        )}
+
         {/* Prompt */}
         {promptText && (
           <div className="text-xs md:text-sm tracking-wide font-mono text-rose-200/90 mb-4 text-center px-4 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/10">
@@ -143,20 +153,37 @@ export const GameScene: React.FC<GameSceneProps> = ({
         {/* Choice list or Waiting Screen */}
         <div className="w-full flex flex-col gap-2.5">
           {!hasChosen ? (
-            availableChoices.map((cId) => (
-              <button
-                key={cId}
-                onClick={() => handleSelectChoice(cId)}
-                className="w-full text-left p-4 rounded-xl bg-black/50 hover:bg-black/75 backdrop-blur-md border border-white/15 hover:border-rose-400/60 text-slate-200 hover:text-white transition-all transform hover:-translate-y-0.5 active:translate-y-0 font-light text-sm md:text-base leading-snug group shadow-lg cursor-pointer"
-              >
-                <div className="flex items-start gap-3">
-                  <span className="text-rose-400/70 group-hover:text-rose-400 mt-0.5 font-mono text-xs">
-                    ✦
-                  </span>
-                  <span>{getChoiceText(cId)}</span>
-                </div>
-              </button>
-            ))
+            availableChoices.map((cId) => {
+              const isSignificant = cId !== 'continue';
+              return (
+                <button
+                  key={cId}
+                  onClick={() => handleSelectChoice(cId)}
+                  className={`w-full text-left p-4 rounded-xl backdrop-blur-md border text-slate-200 hover:text-white transition-all transform hover:-translate-y-0.5 active:translate-y-0 font-light text-sm md:text-base leading-snug group shadow-lg cursor-pointer relative overflow-hidden ${
+                    shared.majorChoicePrompt
+                      ? 'bg-black/60 hover:bg-black/80 border-amber-400/30 hover:border-amber-400/80 shadow-amber-950/20'
+                      : 'bg-black/50 hover:bg-black/75 border-white/15 hover:border-rose-400/60'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3">
+                      <span className={`mt-0.5 font-mono text-xs ${
+                        shared.majorChoicePrompt ? 'text-amber-400' : 'text-rose-400/70 group-hover:text-rose-400'
+                      }`}>
+                        ✦
+                      </span>
+                      <span>{getChoiceText(cId)}</span>
+                    </div>
+
+                    {shared.majorChoicePrompt && isSignificant && (
+                      <span className="shrink-0 text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-amber-400/10 text-amber-300 border border-amber-400/25 ml-2 mt-0.5">
+                        ส่งผลต่อเนื้อเรื่อง
+                      </span>
+                    )}
+                  </div>
+                </button>
+              );
+            })
           ) : (
             <div className="w-full py-8 px-6 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/15 flex flex-col items-center justify-center text-center animate-fade-in shadow-2xl">
               <Loader2 className="w-6 h-6 text-rose-400 animate-spin mb-3" />

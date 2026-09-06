@@ -194,11 +194,18 @@ export class GameRoom extends Room<GameRoomStateSchema> {
     this.broadcastSharedSync();
   }
 
+  private lastShiftDescription?: string;
+
   private checkSceneResolution() {
     const sessionA = this.roleAssigned.playerA ? this.playerSessions.get(this.roleAssigned.playerA) : undefined;
     const sessionB = this.roleAssigned.playerB ? this.playerSessions.get(this.roleAssigned.playerB) : undefined;
 
     if (sessionA?.hasChosen && sessionB?.hasChosen) {
+      // Record previous relationship snapshot to detect shifts
+      const prevTrust = this.storyEngine.relationship.TRUST;
+      const prevConflict = this.storyEngine.relationship.CONFLICT;
+      const prevCloseness = this.storyEngine.relationship.CLOSENESS;
+
       // Resolve scene
       const prevSceneId = this.state.currentSceneId;
       const res = this.storyEngine.resolveScene(sessionA, sessionB);
@@ -206,6 +213,21 @@ export class GameRoom extends Room<GameRoomStateSchema> {
       this.state.lastResolvedSceneId = prevSceneId;
       this.state.revealedChoiceA = sessionA.currentChoiceId || '';
       this.state.revealedChoiceB = sessionB.currentChoiceId || '';
+
+      // Determine narrative trajectory shift message
+      const dTrust = this.storyEngine.relationship.TRUST - prevTrust;
+      const dConflict = this.storyEngine.relationship.CONFLICT - prevConflict;
+      const dCloseness = this.storyEngine.relationship.CLOSENESS - prevCloseness;
+
+      if (dConflict >= 8) {
+        this.lastShiftDescription = 'เส้นเรื่องเกิดรอยร้าว: ความขัดแย้งพุ่งสูงขึ้นอย่างมีนัยสำคัญ ส่งผลต่อฉากจบที่ไม่อาจย้อนคืน';
+      } else if (dTrust >= 8 || dCloseness >= 8) {
+        this.lastShiftDescription = 'เส้นเรื่องเบ่งบาน: กำแพงในใจลดลง ความไว้ใจและความใกล้ชิดแน่นแฟ้นยิ่งขึ้น';
+      } else if (dTrust <= -8) {
+        this.lastShiftDescription = 'เส้นเรื่องสั่นคลอน: ความระแวงเริ่มหยั่งราก นำพาเรื่องราวสู่เส้นทางที่เปราะบาง';
+      } else {
+        this.lastShiftDescription = 'เส้นเรื่องขยับตัว: การตัดสินใจของคุณทั้งคู่กำลังปรับเปลี่ยนทัศนคติที่มีต่อกัน';
+      }
 
       if (res.isFinished && res.result) {
         this.state.status = 'COMPLETED';
@@ -263,6 +285,13 @@ export class GameRoom extends Room<GameRoomStateSchema> {
     const sessionDataA = this.roleAssigned.playerA ? this.playerSessions.get(this.roleAssigned.playerA) : undefined;
     const sessionDataB = this.roleAssigned.playerB ? this.playerSessions.get(this.roleAssigned.playerB) : undefined;
 
+    // Check if current scene is a critical story divergence point
+    const majorScenes = ['ch2_phone_choice', 'ch3_confrontation', 'ch6_breaking_point', 'ch7_final_question'];
+    const isMajor = majorScenes.includes(this.state.currentSceneId);
+    const majorChoicePrompt = isMajor 
+      ? 'จุดเปลี่ยนสำคัญของชะตากรรม: ทางเลือกในฉากนี้จะเปลี่ยนทิศทางความสัมพันธ์และฉากจบอย่างถาวร' 
+      : undefined;
+
     return {
       roomCode: this.state.roomCode,
       status: this.state.status as any,
@@ -279,6 +308,8 @@ export class GameRoom extends Room<GameRoomStateSchema> {
       lastResolvedSceneId: this.state.lastResolvedSceneId,
       revealedChoiceA: this.state.revealedChoiceA,
       revealedChoiceB: this.state.revealedChoiceB,
+      lastShiftDescription: this.lastShiftDescription,
+      majorChoicePrompt,
       result: this.completedResult
     };
   }

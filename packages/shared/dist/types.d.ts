@@ -70,6 +70,8 @@ export interface ClientSharedState {
     lastResolvedSceneId?: string;
     revealedChoiceA?: string;
     revealedChoiceB?: string;
+    lastShiftDescription?: string;
+    majorChoicePrompt?: string;
     result?: GameResultSummary;
 }
 export interface ClientSyncPayload {
