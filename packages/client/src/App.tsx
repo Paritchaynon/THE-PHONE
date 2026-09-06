@@ -25,6 +25,8 @@ export const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [publicResult, setPublicResult] = useState<GameResultSummary | null>(null);
 
+  const joinAttemptedRef = React.useRef(false);
+
   // Auto-check URL for share code or join room code
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -39,8 +41,16 @@ export const App: React.FC = () => {
           if (!data.error) setPublicResult(data);
         })
         .catch(() => {});
-    } else if (joinCode && !connected) {
-      joinRoom(joinCode).catch(() => {});
+    } else if (joinCode && !connected && !joinAttemptedRef.current) {
+      joinAttemptedRef.current = true;
+      setLoading(true);
+      joinRoom(joinCode)
+        .catch((err) => {
+          console.error('Failed to auto-join room from URL:', err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   }, [connected, joinRoom]);
 

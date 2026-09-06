@@ -156,18 +156,36 @@ export function useColyseus() {
 
   const joinRoom = async (roomCode: string) => {
     try {
-      // In colyseus, join by room options or id
-      const rooms = await client.getAvailableRooms('game_room');
-      const target = rooms.find(r => (r.metadata && r.metadata.roomCode === roomCode.toUpperCase()) || r.roomId.toUpperCase().startsWith(roomCode.toUpperCase()));
-      
-      const reconnectToken = sessionStorage.getItem('between_us_reconnect_token');
-      const activeRoom = target 
-        ? await client.joinById(target.roomId, { reconnectToken })
-        : await client.joinOrCreate('game_room', { roomCode: roomCode.toUpperCase(), reconnectToken });
+      const formattedCode = roomCode.trim().toUpperCase();
+      console.log('Attempting to join room with code:', formattedCode);
 
+      // Query available rooms filtered by roomCode or roomId
+      const rooms = await client.getAvailableRooms('game_room');
+      console.log('Available rooms on server:', rooms);
+
+      const target = rooms.find(
+        (r) =>
+          (r.metadata && r.metadata.roomCode === formattedCode) ||
+          r.roomId.toUpperCase().startsWith(formattedCode) ||
+          r.roomId.toUpperCase() === formattedCode
+      );
+
+      const reconnectToken = sessionStorage.getItem('between_us_reconnect_token');
+      let activeRoom: Room;
+
+      if (target) {
+        console.log('Found existing room:', target.roomId);
+        activeRoom = await client.joinById(target.roomId, { reconnectToken, roomCode: formattedCode });
+      } else {
+        console.log('No existing room matched metadata, joining with joinOrCreate by roomCode...');
+        activeRoom = await client.joinOrCreate('game_room', { roomCode: formattedCode, reconnectToken });
+      }
+
+      console.log('Joined room successfully:', activeRoom.id);
       bindRoom(activeRoom);
       return activeRoom;
     } catch (err: any) {
+      console.error('Error in joinRoom:', err);
       setError(err.message || 'Failed to join room');
       throw err;
     }

@@ -33,8 +33,8 @@ const gameServer = new Server({
   })
 });
 
-// Register Game Room
-gameServer.define('game_room', GameRoom);
+// Register Game Room and enable matchmaking query by roomCode
+gameServer.define('game_room', GameRoom).filterBy(['roomCode']);
 
 server.listen(port, () => {
   console.log(`[Between Us] Authoritative Game Server running on port ${port}`);

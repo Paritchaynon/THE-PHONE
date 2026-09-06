@@ -21,6 +21,7 @@ export class GameRoom extends Room<GameRoomStateSchema> {
     this.setState(new GameRoomStateSchema());
     const roomCode = options.roomCode || this.roomId.substring(0, 6).toUpperCase();
     this.state.roomCode = roomCode;
+    this.setMetadata({ roomCode });
     this.state.status = 'LOBBY';
     this.state.currentSceneId = 'ch1_intro';
     this.state.chapter = 1;
