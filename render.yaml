@@ -18,7 +18,4 @@ services:
     staticPublishPath: packages/client/dist
     envVars:
       - key: VITE_SERVER_URL
-        fromService:
-          type: web
-          name: between-us-server
-          property: host
+        value: between-us-server-79k6.onrender.com
