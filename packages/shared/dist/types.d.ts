@@ -17,14 +17,29 @@ export interface ChoiceDefinition {
     nextScene?: string;
     revealedInResolution?: boolean;
 }
-export type DecisionMode = 'simultaneous' | 'single_player' | 'narrative_only';
+export type DecisionMode = 'simultaneous' | 'single_player' | 'narrative_only' | 'action_reaction';
+export interface InteractiveHotspot {
+    id: string;
+    targetRole: PlayerRole;
+    nameTh: string;
+    nameEn: string;
+    type: 'phone' | 'partner_eyes' | 'hands' | 'drinks' | 'item';
+    position: {
+        x: number;
+        y: number;
+        z?: number;
+    };
+    actionChoiceId: string;
+}
 export interface SceneDefinition {
     id: string;
     chapter: number;
     mode: DecisionMode;
+    initiatorRole?: PlayerRole;
     activeRole?: PlayerRole;
     choicesA?: ChoiceDefinition[];
     choicesB?: ChoiceDefinition[];
+    hotspots?: InteractiveHotspot[];
     resolutionRuleId?: string;
     nextSceneDefault?: string;
     ambientTrack?: string;
@@ -74,6 +89,13 @@ export interface ClientSharedState {
     playerBChoiceSubmitted: boolean;
     playerAContinued?: boolean;
     playerBContinued?: boolean;
+    activeAction?: {
+        initiatorRole: PlayerRole;
+        actionId: string;
+        actionLabelTh?: string;
+        actionLabelEn?: string;
+        timestamp: number;
+    };
     lastResolvedSceneId?: string;
     revealedChoiceA?: string;
     revealedChoiceB?: string;
@@ -85,4 +107,5 @@ export interface ClientSyncPayload {
     shared: ClientSharedState;
     private: ClientPrivateState;
     availableChoiceIds: string[];
+    availableHotspots?: InteractiveHotspot[];
 }

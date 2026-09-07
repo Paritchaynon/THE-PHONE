@@ -13,6 +13,44 @@ export const SCENES: Record<string, SceneDefinition> = {
     id: 'ch1_observation',
     chapter: 1,
     mode: 'simultaneous',
+    hotspots: [
+      {
+        id: 'spot_ch1_eyes_a',
+        targetRole: 'playerA',
+        nameTh: 'สบตาและถามไถ่ความเหนื่อยล้า',
+        nameEn: 'Make eye contact and ask gently',
+        type: 'partner_eyes',
+        position: { x: 50, y: 35, z: 2 },
+        actionChoiceId: 'a_ask_gently'
+      },
+      {
+        id: 'spot_ch1_drink_a',
+        targetRole: 'playerA',
+        nameTh: 'จิบเครื่องดื่มและให้พื้นที่ส่วนตัว',
+        nameEn: 'Sip drink and give them quiet space',
+        type: 'drinks',
+        position: { x: 28, y: 78, z: 1 },
+        actionChoiceId: 'a_give_space'
+      },
+      {
+        id: 'spot_ch1_open_b',
+        targetRole: 'playerB',
+        nameTh: 'สบตาและเอ่ยปากเปิดใจ',
+        nameEn: 'Look up and open your heart',
+        type: 'partner_eyes',
+        position: { x: 50, y: 35, z: 2 },
+        actionChoiceId: 'b_open_up'
+      },
+      {
+        id: 'spot_ch1_smile_b',
+        targetRole: 'playerB',
+        nameTh: 'ฝืนยิ้มกลบเกลื่อนความกังวล',
+        nameEn: 'Deflect with a subtle smile',
+        type: 'item',
+        position: { x: 72, y: 75, z: 1 },
+        actionChoiceId: 'b_deflect_smile'
+      }
+    ],
     // Player A notices Player B looks exhausted and distracted
     choicesA: [
       {
@@ -70,10 +108,40 @@ export const SCENES: Record<string, SceneDefinition> = {
   'ch2_phone_choice': {
     id: 'ch2_phone_choice',
     chapter: 2,
-    mode: 'simultaneous',
+    mode: 'action_reaction',
+    initiatorRole: 'playerA',
+    hotspots: [
+      {
+        id: 'spot_phone',
+        targetRole: 'playerA',
+        nameTh: 'โทรศัพท์ที่กำลังสว่าง',
+        nameEn: 'Glowing Phone Screen',
+        type: 'phone',
+        position: { x: 50, y: 72, z: 2 },
+        actionChoiceId: 'a_peek_phone'
+      },
+      {
+        id: 'spot_turn_away',
+        targetRole: 'playerA',
+        nameTh: 'คว่ำหน้าจอโทรศัพท์ลง',
+        nameEn: 'Flip phone face down',
+        type: 'item',
+        position: { x: 62, y: 75, z: 1 },
+        actionChoiceId: 'a_turn_face_down'
+      },
+      {
+        id: 'spot_call_partner',
+        targetRole: 'playerA',
+        nameTh: 'ส่งเสียงเรียกถามอีกฝ่าย',
+        nameEn: 'Call out to partner',
+        type: 'partner_eyes',
+        position: { x: 35, y: 40, z: 3 },
+        actionChoiceId: 'a_call_out_partner'
+      }
+    ],
     // ASYMMETRIC INFORMATION:
-    // Player A sees partner stepped away into the kitchen, phone buzzes on table with a preview: "I miss how we used to talk..."
-    // Player B is in kitchen, realizing they forgot their phone, knowing an old friend/ex sent a text they haven't explained yet.
+    // Player A sees partner stepped away, phone buzzes on table with preview: "I miss how we used to talk..."
+    // Player B is returning, sees Player A's action in real time, and must react immediately!
     choicesA: [
       {
         id: 'a_peek_phone',

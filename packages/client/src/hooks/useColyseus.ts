@@ -50,6 +50,7 @@ export function useColyseus() {
   const [sharedState, setSharedState] = useState<ClientSharedState | null>(null);
   const [privateState, setPrivateState] = useState<ClientPrivateState | null>(null);
   const [availableChoices, setAvailableChoices] = useState<string[]>([]);
+  const [availableHotspots, setAvailableHotspots] = useState<any[]>([]);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -87,9 +88,14 @@ export function useColyseus() {
     });
 
     // Save reconnect info
-    activeRoom.onMessage('PRIVATE_SYNC', (data: { private: ClientPrivateState; availableChoiceIds: string[] }) => {
+    activeRoom.onMessage('PRIVATE_SYNC', (data: { private: ClientPrivateState; availableChoiceIds: string[]; availableHotspots?: any[] }) => {
       setPrivateState(data.private);
       setAvailableChoices(data.availableChoiceIds);
+      if (data.availableHotspots) {
+        setAvailableHotspots(data.availableHotspots);
+      } else {
+        setAvailableHotspots([]);
+      }
       if (data.private.reconnectToken) {
         sessionStorage.setItem('between_us_reconnect_token', data.private.reconnectToken);
         sessionStorage.setItem('between_us_room_id', activeRoom.id);
@@ -251,6 +257,7 @@ export function useColyseus() {
     sharedState,
     privateState,
     availableChoices,
+    availableHotspots,
     createRoom,
     joinRoom,
     sendReady,

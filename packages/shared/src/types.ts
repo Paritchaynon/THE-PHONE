@@ -67,16 +67,28 @@ export interface ChoiceDefinition {
   revealedInResolution?: boolean; // whether the partner sees what was chosen
 }
 
-export type DecisionMode = 'simultaneous' | 'single_player' | 'narrative_only';
+export type DecisionMode = 'simultaneous' | 'single_player' | 'narrative_only' | 'action_reaction';
+
+export interface InteractiveHotspot {
+  id: string;
+  targetRole: PlayerRole; // who can interact with this
+  nameTh: string;
+  nameEn: string;
+  type: 'phone' | 'partner_eyes' | 'hands' | 'drinks' | 'item';
+  position: { x: number; y: number; z?: number }; // percentage 0-100 on diorama
+  actionChoiceId: string;
+}
 
 export interface SceneDefinition {
   id: string;
   chapter: number;
   mode: DecisionMode;
+  initiatorRole?: PlayerRole; // for action_reaction: who acts first
   activeRole?: PlayerRole; // if single_player
   choicesA?: ChoiceDefinition[];
   choicesB?: ChoiceDefinition[];
-  resolutionRuleId?: string; // id to evaluate when both choices arrive
+  hotspots?: InteractiveHotspot[];
+  resolutionRuleId?: string; // id to evaluate when choices arrive
   nextSceneDefault?: string;
   ambientTrack?: string;
 }
@@ -129,6 +141,13 @@ export interface ClientSharedState {
   playerBChoiceSubmitted: boolean;
   playerAContinued?: boolean;
   playerBContinued?: boolean;
+  activeAction?: {
+    initiatorRole: PlayerRole;
+    actionId: string;
+    actionLabelTh?: string;
+    actionLabelEn?: string;
+    timestamp: number;
+  };
   lastResolvedSceneId?: string;
   revealedChoiceA?: string;
   revealedChoiceB?: string;
@@ -141,4 +160,5 @@ export interface ClientSyncPayload {
   shared: ClientSharedState;
   private: ClientPrivateState;
   availableChoiceIds: string[];
+  availableHotspots?: InteractiveHotspot[];
 }

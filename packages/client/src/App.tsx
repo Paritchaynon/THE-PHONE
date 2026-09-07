@@ -15,6 +15,7 @@ export const App: React.FC = () => {
     sharedState,
     privateState,
     availableChoices,
+    availableHotspots,
     createRoom,
     joinRoom,
     sendReady,
@@ -149,6 +150,7 @@ export const App: React.FC = () => {
         shared={sharedState}
         privateState={privateState}
         availableChoices={availableChoices}
+        availableHotspots={availableHotspots}
         onSubmitChoice={submitChoice}
       />
     );

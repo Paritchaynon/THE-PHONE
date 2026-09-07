@@ -119,6 +119,48 @@ class AudioManager {
     osc.start();
     osc.stop(this.ctx.currentTime + 0.5);
   }
+
+  public playPhoneVibrate() {
+    if (!this.enabled || !this.ctx) return;
+    try {
+      // Create double buzzing vibration sound effect
+      [0, 0.18].forEach(delay => {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(120, this.ctx.currentTime + delay);
+        osc.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + delay + 0.12);
+
+        gain.gain.setValueAtTime(0.08, this.ctx.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + delay + 0.12);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(this.ctx.currentTime + delay);
+        osc.stop(this.ctx.currentTime + delay + 0.12);
+      });
+    } catch (e) {}
+  }
+
+  public playAlert() {
+    if (!this.enabled || !this.ctx) return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(520, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(780, this.ctx.currentTime + 0.15);
+
+      gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.2);
+    } catch (e) {}
+  }
 }
 
 export const sound = new AudioManager();

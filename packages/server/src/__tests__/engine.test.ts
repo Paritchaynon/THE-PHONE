@@ -86,4 +86,28 @@ describe('Authoritative StoryEngine & State Isolation', () => {
     expect(result.ending).toBe('TOGETHER');
     expect(result.shareCode.length).toBe(6);
   });
+
+  test('Action-reaction mode (ch2_phone_choice) triggers with interactive hotspots', () => {
+    engine.currentSceneId = 'ch2_phone_choice';
+    const sceneDef = engine.getScene('ch2_phone_choice');
+    expect(sceneDef.mode).toBe('action_reaction');
+    expect(sceneDef.initiatorRole).toBe('playerA');
+    expect(sceneDef.hotspots).toBeDefined();
+    expect(sceneDef.hotspots?.length).toBeGreaterThan(0);
+
+    // Player A interacts with glowing phone
+    const choicesA = engine.getAvailableChoices('ch2_phone_choice', 'playerA');
+    expect(choicesA).toContain('a_peek_phone');
+    engine.recordChoice(playerA, 'a_peek_phone');
+
+    // Player B reacts to Player A's action
+    const choicesB = engine.getAvailableChoices('ch2_phone_choice', 'playerB');
+    expect(choicesB).toContain('b_hurry_hide');
+    engine.recordChoice(playerB, 'b_hurry_hide');
+
+    const res = engine.resolveScene(playerA, playerB);
+    expect(res.nextSceneId).toBe('ch3_confrontation');
+    expect(playerA.privateFlags.a_peeked_phone).toBe(true);
+    expect(playerB.privateFlags.b_attempted_hide).toBe(true);
+  });
 });

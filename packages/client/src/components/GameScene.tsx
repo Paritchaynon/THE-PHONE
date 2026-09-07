@@ -1,13 +1,15 @@
 import React from 'react';
 import { useI18n } from '../i18n/I18nContext';
 import { sound } from '../utils/sound';
-import { ClientSharedState, ClientPrivateState } from '@between-us/shared';
+import { ClientSharedState, ClientPrivateState, InteractiveHotspot } from '@between-us/shared';
 import { Volume2, VolumeX, Loader2, Sparkles, Image as ImageIcon, Users } from 'lucide-react';
+import { SceneDiorama25D } from './SceneDiorama25D';
 
 interface GameSceneProps {
   shared: ClientSharedState;
   privateState: ClientPrivateState;
   availableChoices: string[];
+  availableHotspots?: InteractiveHotspot[];
   onSubmitChoice: (choiceId: string) => void;
 }
 
@@ -15,6 +17,7 @@ export const GameScene: React.FC<GameSceneProps> = ({
   shared,
   privateState,
   availableChoices,
+  availableHotspots = [],
   onSubmitChoice
 }) => {
   const { locale, setLocale, t, getScene, getChoiceText } = useI18n();
@@ -55,18 +58,18 @@ export const GameScene: React.FC<GameSceneProps> = ({
 
   return (
     <div className="relative min-h-screen w-full flex flex-col items-center justify-between p-4 md:p-8 text-slate-100 font-thai select-none overflow-x-hidden">
-      {/* Visual Novel Full Atmospheric Background */}
+      {/* Ambient Visual Novel Blur Background */}
       <div 
-        className="fixed inset-0 bg-cover bg-center transition-all duration-1000 ease-out pointer-events-none scale-105"
+        className="fixed inset-0 bg-cover bg-center transition-all duration-1000 ease-out pointer-events-none scale-110 filter blur-lg opacity-40"
         style={{ backgroundImage: `url(${currentBgImage})` }}
       />
       
       {/* Cinematic Vignette & Dark Overlay Gradients */}
-      <div className="fixed inset-0 bg-gradient-to-t from-[#06080d] via-[#06080d]/85 to-[#06080d]/75 pointer-events-none" />
+      <div className="fixed inset-0 bg-gradient-to-t from-[#06080d] via-[#06080d]/90 to-[#06080d]/80 pointer-events-none" />
       <div className="fixed inset-0 bg-radial-vignette pointer-events-none opacity-80" />
 
       {/* Top Scene Header */}
-      <header className="w-full max-w-2xl flex items-center justify-between z-10 pt-2">
+      <header className="w-full max-w-2xl flex items-center justify-between z-10 pt-2 mb-3">
         <div className="bg-black/40 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-white/10">
           <span className="text-[11px] uppercase tracking-widest text-rose-400 font-mono block">
             {sceneData.chapter_title || `CHAPTER ${shared.chapter}`}
@@ -100,28 +103,34 @@ export const GameScene: React.FC<GameSceneProps> = ({
         </div>
       </header>
 
-      {/* Narrative & Perspective Centerpiece */}
-      <main className="w-full max-w-2xl flex flex-col items-center my-auto z-10 py-4 animate-fade-in">
-        {/* Visual Novel Scene Card Banner */}
-        <div className="w-full mb-4 rounded-2xl overflow-hidden border border-white/15 shadow-2xl relative group max-h-52 md:max-h-64">
-          <img
-            src={currentBgImage}
-            alt="Scene Visual"
-            className="w-full h-full object-cover object-center transform transition-transform duration-700 group-hover:scale-105 filter brightness-90 contrast-105"
+      {/* Main Diorama & Perspective Section */}
+      <main className="w-full max-w-2xl flex flex-col items-center my-auto z-10 py-2 animate-fade-in">
+        {/* 2.5D Interactive Diorama Screen */}
+        <div className="w-full mb-3">
+          <SceneDiorama25D
+            sceneId={shared.currentSceneId}
+            chapter={shared.chapter}
+            bgImage={currentBgImage}
+            role={privateState.role}
+            hotspots={availableHotspots}
+            onSelectHotspot={handleSelectChoice}
+            activeAction={shared.activeAction}
+            hasChosen={hasChosen}
+            locale={locale}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent flex items-end p-4 md:p-5">
-            {narrativeText && (
-              <p className="text-xs md:text-sm text-slate-200 font-light leading-relaxed drop-shadow-md">
-                {narrativeText}
-              </p>
-            )}
-          </div>
         </div>
+
+        {/* Narrative Atmosphere Snippet */}
+        {narrativeText && (
+          <div className="w-full mb-3 px-4 py-2.5 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 text-xs md:text-sm text-slate-300 font-light leading-relaxed">
+            {narrativeText}
+          </div>
+        )}
 
         {/* Asymmetric Private Perspective Box */}
         {perspectiveText && (
-          <div className="w-full mb-4 p-5 md:p-6 rounded-2xl bg-black/60 backdrop-blur-xl border border-white/15 shadow-2xl relative overflow-hidden">
-            <div className="flex items-center gap-2 mb-2">
+          <div className="w-full mb-3 p-4 md:p-5 rounded-2xl bg-black/60 backdrop-blur-xl border border-rose-500/20 shadow-2xl relative overflow-hidden">
+            <div className="flex items-center gap-2 mb-1.5">
               <Sparkles className="w-3.5 h-3.5 text-rose-400" />
               <span className="text-[10px] tracking-widest font-mono uppercase text-rose-300">
                 มุมมองลับของคุณ (YOUR PERSPECTIVE)

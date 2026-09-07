@@ -56,10 +56,44 @@ export class GameRoom extends Room<GameRoomStateSchema> {
       const session = this.playerSessions.get(client.sessionId);
       if (!session) return;
 
+      const currentScene = this.storyEngine.getScene(this.state.currentSceneId);
+      const isActionReaction = currentScene?.mode === 'action_reaction';
+
       const success = this.storyEngine.recordChoice(session, message.choiceId);
       if (success) {
         const schema = this.state.players.get(client.sessionId);
         if (schema) schema.choiceSubmitted = true;
+
+        // If in action_reaction mode and initiator just acted, notify partner immediately!
+        if (isActionReaction && currentScene.initiatorRole === session.role) {
+          const actionLabels: Record<string, { th: string; en: string }> = {
+            a_peek_phone: {
+              th: 'อีกฝ่ายกำลังเอื้อมมือไปแตะและแอบดูโทรศัพท์ของคุณ!',
+              en: 'Your partner is reaching over and peeking at your phone!'
+            },
+            a_turn_face_down: {
+              th: 'อีกฝ่ายเอื้อมมือไปคว่ำหน้าจอโทรศัพท์ของคุณลงอย่างเงียบๆ',
+              en: 'Your partner reached over and gently flipped your phone face down.'
+            },
+            a_call_out_partner: {
+              th: 'อีกฝ่ายส่งเสียงเรียกถามคุณเรื่องโทรศัพท์ที่กำลังสว่างอยู่',
+              en: 'Your partner called out to you asking about the glowing screen.'
+            }
+          };
+
+          const label = actionLabels[message.choiceId] || {
+            th: 'อีกฝ่ายได้เริ่มการกระทำบางอย่างแล้ว...',
+            en: 'Your partner just made a move...'
+          };
+
+          this.activeActionNotification = {
+            initiatorRole: session.role,
+            actionId: message.choiceId,
+            actionLabelTh: label.th,
+            actionLabelEn: label.en,
+            timestamp: Date.now()
+          };
+        }
 
         // Send confirmation only to this client
         this.sendPrivateSync(client);
@@ -195,6 +229,13 @@ export class GameRoom extends Room<GameRoomStateSchema> {
   }
 
   private lastShiftDescription?: string;
+  private activeActionNotification?: {
+    initiatorRole: PlayerRole;
+    actionId: string;
+    actionLabelTh?: string;
+    actionLabelEn?: string;
+    timestamp: number;
+  };
 
   private checkSceneResolution() {
     const sessionA = this.roleAssigned.playerA ? this.playerSessions.get(this.roleAssigned.playerA) : undefined;
@@ -266,6 +307,7 @@ export class GameRoom extends Room<GameRoomStateSchema> {
     this.state.status = 'PLAYING';
     this.state.currentSceneId = this.storyEngine.currentSceneId;
     this.lastShiftDescription = undefined; // Reset shift banner on moving into new scene
+    this.activeActionNotification = undefined; // Reset action reaction state
     const sceneDef = this.storyEngine.getScene(this.state.currentSceneId);
     if (sceneDef) {
       this.state.chapter = sceneDef.chapter;
@@ -311,6 +353,7 @@ export class GameRoom extends Room<GameRoomStateSchema> {
       playerBChoiceSubmitted: Boolean(sessionB?.choiceSubmitted),
       playerAContinued: Boolean(sessionDataA?.hasChosen),
       playerBContinued: Boolean(sessionDataB?.hasChosen),
+      activeAction: this.activeActionNotification,
       lastResolvedSceneId: this.state.lastResolvedSceneId,
       revealedChoiceA: this.state.revealedChoiceA,
       revealedChoiceB: this.state.revealedChoiceB,
@@ -329,6 +372,8 @@ export class GameRoom extends Room<GameRoomStateSchema> {
     if (!session) return;
 
     const availableChoiceIds = this.storyEngine.getAvailableChoices(this.state.currentSceneId, session.role);
+    const sceneDef = this.storyEngine.getScene(this.state.currentSceneId);
+    const availableHotspots = sceneDef?.hotspots?.filter(h => h.targetRole === session.role) || [];
 
     const privateState: ClientPrivateState = {
       role: session.role,
@@ -341,7 +386,8 @@ export class GameRoom extends Room<GameRoomStateSchema> {
     // Explicitly isolated payload
     client.send('PRIVATE_SYNC', {
       private: privateState,
-      availableChoiceIds
+      availableChoiceIds,
+      availableHotspots
     });
   }
 
