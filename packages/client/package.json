@@ -10,10 +10,12 @@
   },
   "dependencies": {
     "@between-us/shared": "*",
+    "@types/three": "^0.185.4",
     "colyseus.js": "^0.15.24",
     "lucide-react": "^0.378.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "three": "^0.185.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.1",

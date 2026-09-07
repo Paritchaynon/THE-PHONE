@@ -3,7 +3,7 @@ import { useI18n } from '../i18n/I18nContext';
 import { sound } from '../utils/sound';
 import { ClientSharedState, ClientPrivateState, InteractiveHotspot } from '@between-us/shared';
 import { Volume2, VolumeX, Loader2, Sparkles, Image as ImageIcon, Users } from 'lucide-react';
-import { SceneDiorama25D } from './SceneDiorama25D';
+import { Scene3DCanvas } from './Scene3DCanvas';
 
 interface GameSceneProps {
   shared: ClientSharedState;
@@ -103,42 +103,34 @@ export const GameScene: React.FC<GameSceneProps> = ({
         </div>
       </header>
 
-      {/* Main Diorama & Perspective Section */}
-      <main className="w-full max-w-2xl flex flex-col items-center my-auto z-10 py-2 animate-fade-in">
-        {/* 2.5D Interactive Diorama Screen */}
+      {/* Main 3D Stage & Interactive Action Section */}
+      <main className="w-full max-w-2xl flex flex-col items-center my-auto z-10 py-1 animate-fade-in">
+        {/* Full 3D Interactive WebGL Table Canvas */}
         <div className="w-full mb-3">
-          <SceneDiorama25D
+          <Scene3DCanvas
             sceneId={shared.currentSceneId}
             chapter={shared.chapter}
-            bgImage={currentBgImage}
             role={privateState.role}
             hotspots={availableHotspots}
-            onSelectHotspot={handleSelectChoice}
+            onSelectAction={handleSelectChoice}
             activeAction={shared.activeAction}
             hasChosen={hasChosen}
             locale={locale}
           />
         </div>
 
-        {/* Narrative Atmosphere Snippet */}
-        {narrativeText && (
-          <div className="w-full mb-3 px-4 py-2.5 rounded-2xl bg-black/40 backdrop-blur-md border border-white/10 text-xs md:text-sm text-slate-300 font-light leading-relaxed">
-            {narrativeText}
-          </div>
-        )}
-
-        {/* Asymmetric Private Perspective Box */}
+        {/* Diegetic Concise Narrative & Perspective Pill */}
         {perspectiveText && (
-          <div className="w-full mb-3 p-4 md:p-5 rounded-2xl bg-black/60 backdrop-blur-xl border border-rose-500/20 shadow-2xl relative overflow-hidden">
-            <div className="flex items-center gap-2 mb-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-rose-400" />
-              <span className="text-[10px] tracking-widest font-mono uppercase text-rose-300">
-                มุมมองลับของคุณ (YOUR PERSPECTIVE)
-              </span>
+          <div className="w-full mb-3 px-4 py-3 rounded-2xl bg-black/70 backdrop-blur-xl border border-rose-500/30 shadow-2xl flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="w-2 h-2 rounded-full bg-rose-400 shrink-0 animate-pulse" />
+              <p className="text-xs md:text-sm text-slate-200 font-light truncate">
+                {perspectiveText}
+              </p>
             </div>
-            <p className="text-sm md:text-base text-slate-100 font-light leading-relaxed">
-              {perspectiveText}
-            </p>
+            <span className="text-[9px] uppercase tracking-widest font-mono text-rose-300/70 shrink-0">
+              {isPlayerA ? 'A' : 'B'}
+            </span>
           </div>
         )}
 
